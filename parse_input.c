@@ -8,7 +8,7 @@ char **parse_input(char *input)
 {
 	char *token; /*var to store tokens*/
 	char **args; /*array of args*/
-	int count;
+	int count = 0;
 	char *del = " \t\r\n\v\f"; /*delimeters to tokenize*/
 
 	args = malloc(MAX_INPUT_LEN * sizeof(char *)); /* alloate memory for args*/
@@ -32,4 +32,3 @@ char **parse_input(char *input)
 	args[count] = NULL;
 	return (args);
 }
-
