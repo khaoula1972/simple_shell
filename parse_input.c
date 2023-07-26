@@ -12,7 +12,6 @@ char **parse_input(char *input)
 	char *del = " \t\r\n\v\f"; /*delimeters to tokenize*/
 
 	args = malloc(MAX_INPUT_LEN * sizeof(char *)); /* alloate memory for args*/
-
 	if (!args)
 	{
 		/* allocation failure */

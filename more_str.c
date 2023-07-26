@@ -11,6 +11,9 @@ char *_strdup(const char *str)
 	const char *s = str;
 	char *dup;
 
+	if (str == NULL)
+		return (NULL);
+
 	while (*s != '\0')
 	{
 		len++;
@@ -18,7 +21,6 @@ char *_strdup(const char *str)
 	}
 
 	dup = (char *)malloc((len + 1) * sizeof(char));
-
 	if (dup == NULL)
 		return (NULL);
 
