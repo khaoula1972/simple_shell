@@ -21,7 +21,7 @@ void search_and_execute(const char *command, char **args)
 			/* child process */
 			if (execve(command, args, envp) == -1)
 			{
-				write(STDERR_FILENO, command, strlen(command));
+				write(STDERR_FILENO, command, _strlen(command));
 				write(STDERR_FILENO, ": 1: ", 5);
 				write(STDERR_FILENO, args[0], _strlen(args[0]));
 				perror(": not found");
