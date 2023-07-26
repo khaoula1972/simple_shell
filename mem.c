@@ -37,6 +37,7 @@ char *read_input(void)
 		}
 		else
 		{
+			free(input);
 			perror("Error");
 			exit(EXIT_FAILURE);
 		}
