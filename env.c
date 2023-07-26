@@ -51,7 +51,7 @@ void p_env(void)
 
 	for (e = environ; *e != NULL; e++)
 	{
-		write(STDOUT_FILENO, *e, strlen(*e)); /* print env variable*/
+		write(STDOUT_FILENO, *e, _strlen(*e)); /* print env variable*/
 		write(STDOUT_FILENO, "\n", 1);
 	}
 }
