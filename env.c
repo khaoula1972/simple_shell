@@ -13,7 +13,7 @@ int find_env(const char *var)
 	while ((env_var = environ[i]) != NULL)
 	{
 		l = _strcspn(env_var, "=");
-		if (strncmp(env_var, var, l) == 0 && var[l] == '\0')
+		if (_strncmp(env_var, var, l) == 0 && var[l] == '\0')
 			return (i);
 		i++;
 	}
