@@ -15,7 +15,7 @@ void parse_path(void)
 		exit(EXIT_FAILURE);
 	}
 
-	path = strdup(env_path); /* duplicate string to get tokenized*/
+	path = _strdup(env_path); /* duplicate string to get tokenized*/
 
 	if (path == NULL)
 	{
