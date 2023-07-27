@@ -15,7 +15,7 @@ int main(void)
 
 	while (1)
 	{
-		write(STDOUT_FILENO, "($) ", 4); /* the prompt*/
+		write(STDOUT_FILENO, "$ ", 2); /* the prompt*/
 		fflush(stdout); /* flush th eoutput buffer to ensure prompt is displayed*/
 		input = read_input(); /* read users input*/
 
