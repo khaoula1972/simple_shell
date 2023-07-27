@@ -25,7 +25,6 @@ void search_and_execute(const char *command, char **args)
 				write(STDERR_FILENO, ": 1: ", 5);
 				write(STDERR_FILENO, args[0], _strlen(args[0]));
 				perror(": not found");
-				exit(EXIT_FAILURE);
 			}
 		}
 		wait(NULL); /* wait for child process */
