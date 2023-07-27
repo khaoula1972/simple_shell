@@ -11,7 +11,10 @@ ssize_t read_buff(char *buff, size_t *len)
 	ssize_t rd = read(STDIN_FILENO, buff, READ_BUF_SIZE);
 
 	if (rd > 0)
+	{
 		*len = rd;
+		buff[rd] = '\0';
+	}
 	return (rd);
 }
 
