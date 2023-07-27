@@ -23,28 +23,13 @@ char *read_input(void)
 {
 	char *input = NULL;
 	size_t input_len = 0;
-	ssize_t read = _getline(&input, &input_len, STDIN_FILENO); /* read input*/
-
-	if (read <= 0)
+	
+	if (_getline(&input, &input_len, STDIN_FILENO) == -1)
 	{
-		/* error case while reading input */
-		if (read == EOF)
-		{
-			/* CTRL+D */
-			free(input);
-			write(STDOUT_FILENO, "\n", 1);
-			exit(EXIT_SUCCESS);
-		}
-		else
-		{
-			free(input);
-			perror("Error");
-			exit(EXIT_FAILURE);
-		}
+		/* EOF */
+		free(input);
+		input = _strdup("");
 	}
-
-	/* remove trailing new line */
-	input[_strcspn(input, "\n")] = '\0';
 
 	return (input);
 }

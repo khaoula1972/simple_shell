@@ -10,7 +10,6 @@ int main(void)
 {
 	int i = 0;/*status*/
 	char *input, **args;
-	DirNode *current, *next;
 
 	parse_path();
 
@@ -19,10 +18,11 @@ int main(void)
 		write(STDOUT_FILENO, "($) ", 4); /* the prompt*/
 		fflush(stdout); /* flush th eoutput buffer to ensure prompt is displayed*/
 		input = read_input(); /* read users input*/
-		args = parse_input(input); /*parse input to args*/
 
 		if (input == NULL)
 			break;
+		
+		args = parse_input(input); /*parse input to args*/
 
 		if (args[0] != NULL)
 		{
@@ -82,16 +82,26 @@ int main(void)
 		free(args);
 	}
 
-	/* free allocated memory for the linked list of directories*/
-	current = path_list;
-	while (current != NULL)
-	{
-		next = current->next;
-		free(current->dir);
-		free(current);
-		current = next;
-	}
+	free_path_list();
 
 	return (0);
+}
+
+/**
+ * free_path_list - free the linked list of directories
+ */
+void free_path_list(void)
+{
+	DirNode *current = path_list;
+	DirNode *temp;
+
+	while (current != NULL)
+	{
+		temp = current;
+		current = current->next;
+		free(temp->dir);
+		free(temp);
+	}
+	path_list = NULL;
 }
 

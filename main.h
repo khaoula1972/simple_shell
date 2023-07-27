@@ -48,6 +48,8 @@ int find_env(const char *var);
 int set_env(const char *var, const char *n);
 int unset_env(const char *var);
 
+void free_path_list(void);
+
 /* helpful functions we used */
 size_t _strlen(const char *s);
 size_t _strcspn(const char *str, const char *reject);
