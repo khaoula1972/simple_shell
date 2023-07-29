@@ -1,9 +1,29 @@
 #include "main.h"
+/**
+ * _getenv - function that can get env var value
+ * @args: arguments conatined in structure
+ * @var: env var name
+ * Return: always Null
+ */
+char *_getenv(function_args *args, const char *var)
+{
+	string_list *n = args->environment_list;
+	char *c;
+
+	while (n)
+	{
+		c = sw(n->string, var);
+		if (c && *c)
+			return (c);
+		n = n->next;
+	}
+	return (NULL);
+}
 
 /**
- * print_environment - prints the current environment
- * @args: Structure containing potential arguments. Used to maintain
- * Return: Always 0
+ * print_environment - function that prints curren env
+ * @args: arguments contained in structure
+ * Return: always 0
  */
 int print_environment(function_args *args)
 {
@@ -12,30 +32,46 @@ int print_environment(function_args *args)
 }
 
 /**
- * _getenv - gets the value of an environ variable
- * @info: Structure containing potential arguments. Used to maintain
- * @name: env var name
- * Return: the value
+ * fill_env - function that fills the linked list
+ * @args: arguments
+ * Return: always 0
  */
-char *_getenv(function_args *info, const char *name)
+int fill_env(function_args *args)
 {
-	string_list *node = info->environment_list;
-	char *ptr;
+	string_list *env = NULL;
+	size_t k;
 
-	while (node)
-	{
-		ptr = sw(node->string, name);
-		if (ptr && *ptr)
-			return (ptr);
-		node = node->next;
-	}
-	return (NULL);
+	for (k = 0; environ[k]; k++)
+		ane(&env, environ[k], 0);
+	args->environment_list = env;
+
+	return (0);
 }
 
 /**
- * set_env - Initialize a new environment variable,
- * @args: Structure containing potential arguments. Used to maintain
- *  Return: Always 0
+ * unset_env - function to delete env var
+ * @args: arguments
+ * Return: 0 on succes 1 on error
+ */
+int unset_env(function_args *args)
+{
+	int k;
+
+	if (args->arg_count == 1)
+	{
+		erputs("Too few arguments.\n");
+		return (1);
+	}
+	for (k = 1; k < args->arg_count; k++)
+		_unsetenv(args, args->arg_vector[k]);
+
+	return (0);
+}
+
+/**
+ * set_env - function to set a new envir variable
+ * @args: argments
+ * Return: 0 on succes 1 on error
  */
 int set_env(function_args *args)
 {
@@ -47,41 +83,4 @@ int set_env(function_args *args)
 	if (_setenv(args, args->arg_vector[1], args->arg_vector[2]))
 		return (0);
 	return (1);
-}
-
-/**
- * unset_env - Remove an environment variable
- * @args: Structure containing potential arguments. Used to maintain
- *  Return: Always 0
- */
-int unset_env(function_args *args)
-{
-	int i;
-
-	if (args->arg_count == 1)
-	{
-		erputs("Too few arguments.\n");
-		return (1);
-	}
-	for (i = 1; i <= args->arg_count; i++)
-		_unsetenv(args, args->arg_vector[i]);
-
-	return (0);
-}
-
-/**
- * fill_env - populates env linked list
- * @args: Structure containing potential arguments. Used to maintain
- *          constant function prototype.
- * Return: Always 0
- */
-int fill_env(function_args *args)
-{
-	string_list *node = NULL;
-	size_t i;
-
-	for (i = 0; environ[i]; i++)
-		ane(&node, environ[i], 0);
-	args->environment_list = node;
-	return (0);
 }
