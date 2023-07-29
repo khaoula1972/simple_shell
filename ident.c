@@ -1,7 +1,7 @@
 #include "main.h"
 /**
  * is_inter - a function that returns if our shell is in interactive mode
- * @r: a struct addresse
+ * @function_args: a struct addresse
  * Return: if interactive mode then 1, 0 if not
  */
 int is_inter(function_args *function_args)
