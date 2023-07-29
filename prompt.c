@@ -60,8 +60,8 @@ int find_builtin(function_args *function_args)
 	{"exit", exit_shell},
 	{"env", print_environment},
 	{"help", shelp},
-	{"setenv", _mysetenv},
-	{"unsetenv", _myunsetenv},
+	{"setenv", set_env},
+	{"unsetenv", unset_env},
 	{"cd", change_directory},
 	{"alias", _alias},
 	{NULL, NULL}

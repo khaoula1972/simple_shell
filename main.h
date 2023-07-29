@@ -108,6 +108,10 @@ typedef struct BuiltinCommand
 	int (*command_function)(function_args *);
 } BuiltinCommandTable;
 
+int set_env(function_args *args);
+int fill_env(function_args *args);
+int unset_env(function_args *args);
+
 void _fork(function_args *function_args);
 void _find(function_args *function_args);
 int prompt(function_args *function_args, char **av);

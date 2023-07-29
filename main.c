@@ -38,7 +38,7 @@ int main(int ac, char **av)
 		}
 	info->read_file_descriptor = fd;
 	}
-	populate_env_list(info);
+	fill_env(info);
 	prompt(info, av);
 	return (EXIT_SUCCESS);
 }
