@@ -1,122 +1,88 @@
 #include "main.h"
 
 /**
- * _strcat - function that concatenates two strings
- * @dest: pointer to string destination
- * @src: pointer to the soucrce
- * Return: pointer to the dest string
+ * _strcpy - copies a string
+ * @dest: the destination
+ * @src: the source
+ *
+ * Return: pointer to destination
  */
-char *_strcat(char *dest, const char *src)
+char *_strcpy(char *dest, char *src)
 {
-	char *end = dest;
+	int i = 0;
 
-	/* find end */
-	while (*end != '\0')
+	if (dest == src || src == 0)
+		return (dest);
+	while (src[i])
 	{
-		end++;
+		dest[i] = src[i];
+		i++;
 	}
-
-	/* append source string to dest */
-	while (*src != '\0')
-	{
-		*end = *src;
-		end++;
-		src++;
-	}
-
-	*end = '\0'; /* Null terminated */
-
+	dest[i] = 0;
 	return (dest);
 }
 
 /**
- * _strchr - a function that find the first occurnce of a character in string
- * @str: the string
- * @c: the caractere
- * Return: pointer to first occurence Null if not found
- */
-char *_strchr(const char *str, int c)
-{
-	while (*str != '\0')
-	{
-		if (*str == c)
-			return ((char *)str);
-		str++;
-	}
-
-	/* if not found NULL*/
-	return (NULL);
-}
-
-
-/**
- * _strcmp - function for string comparison
- * @str1: Pointer to the first string
- * @str2: Pointer to the second string
- * Return: negative if str1 is less than str 2, vice versa, 0 if equal
- */
-int _strcmp(const char *str1, const char *str2)
-{
-	while (*str1 && (*str1 == *str2))
-	{
-		str1++;
-		str2++;
-	}
-
-	return (*(unsigned char *)str1 - *(unsigned char *)str2);
-}
-
-/**
- * _strcpy - Copy a string from source to dest
- * @dest: the destination
- * @src: the source
- * Return: pointer to destination buffer
- */
-char *_strcpy(char *dest, const char *src)
-{
-	char *ptr = dest;
-
-	while (*src != '\0')
-	{
-		*dest = *src;
-		dest++;
-		src++;
-	}
-	*dest = '\0';
-	return (ptr);
-}
-
-
-/**
- * _strcspn - calculates the length of the initial substring
- * in the str that does not contain any char from reject
- * @str: pointer str
- * @reject: pointer to reject
+ * _strdup - duplicates a string
+ * @str: the string to duplicate
  *
- * Return: length of the initial substring in the str
- * that does not contain any characters from the reject
+ * Return: pointer to the duplicated string
  */
-
-size_t _strcspn(const char *str, const char *reject)
+char *_strdup(const char *str)
 {
-	size_t cnt = 0;
-	const char *r; /* Pointer to traverse the reject str */
+	int length = 0;
+	char *ret;
 
-	while (*str)
+	if (str == NULL)
+		return (NULL);
+	while (*str++)
+		length++;
+	ret = malloc(sizeof(char) * (length + 1));
+	if (!ret)
+		return (NULL);
+	for (length++; length--;)
+		ret[length] = *--str;
+	return (ret);
+}
+
+/**
+ *_puts - prints an input string
+ *@str: the string to be printed
+ *
+ * Return: Nothing
+ */
+void _puts(char *str)
+{
+	int i = 0;
+
+	if (!str)
+		return;
+	while (str[i] != '\0')
 	{
-		/* Reset r to the beginning of the 'reject' for each char in 'str */
-		r = reject;
-
-		while (*r)
-		{
-			if (*str == *r)
-				return (cnt);
-			r++;
-		}
-		str++;
-		cnt++;
+		_putchar(str[i]);
+		i++;
 	}
+}
 
-	return (cnt);
+/**
+ * _putchar - writes the character c to stdout
+ * @c: The character to print
+ *
+ * Return: On success 1.
+ * On error, -1 is returned, and errno is set appropriately.
+ */
+int _putchar(char c)
+{
+	static int i;
+	static char buf[WRITE];
+
+	if (c == FLUSH || i >= WRITE)
+	{
+		write(1, buf, i);
+		i = 0;
+	}
+	if (c != FLUSH)
+		buf[i++] = c;
+	return (1);
 }
 

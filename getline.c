@@ -1,74 +1,170 @@
 #include "main.h"
 
 /**
- * _getline - reads from the standard input in chunks
- * of READ_BUF_SIZE and stores it in the buf variable
- * @ptr: input buffer
- * @line_len: buffer size
- * @fd: file descriptor
- * Return: num of chars read (including newline), -1 on error
+ * input_buf - buffers chained commands
+ * @function_args: parameter struct
+ * @buf: address of buffer
+ * @len: address of len var
+ *
+ * Return: bytes read
  */
-
-ssize_t _getline(char **ptr, size_t *line_len, int fd)
+ssize_t input_buf(function_args *function_args, char **buf, size_t *len)
 {
-	/*  Static variables buff, i, and len to keep track*/
-	/*  of the current state of the buffer */
-	static char buff[READ_BUF_SIZE];
-	static size_t i, len; /* current position in buffer and size*/
-	size_t k = 0;
-	ssize_t r = 0;/*number of read bytes*/
-	char *p = NULL, *new_p; /*buffer*/
-	int n; /*number of newline found*/
+	ssize_t r = 0;
+	size_t len_p = 0;
 
-	p = *ptr;
-	if (p && line_len)
-		k = *line_len; /* store current ptr and line lenghth in local var*/
-
-	while (1)
+	if (!*len) /* if nothing left in the buffer, fill it */
 	{
-		/*if buffer is empty or have all valide char from buffer*/
-		if (i >= len)
+		/*bfree((void **)function_args->command_buffer);*/
+		free(*buf);
+		*buf = NULL;
+		signal(SIGINT, sigintHandler);
+#if USE_GETLINE
+		r = getline(buf, &len_p, stdin);
+#else
+		r = _getline(function_args, buf, &len_p);
+#endif
+		if (r > 0)
 		{
-			r = read(fd, buff, READ_BUF_SIZE);/*read data*/
-			if (r <= 0)
+			if ((*buf)[r - 1] == '\n')
 			{
-				if (k == 0 && r == 0)
-				{
-					/* EOF */
-					return (0);
-				}
-				return (-1);
+				(*buf)[r - 1] = '\0'; /* remove trailing newline */
+				r--;
 			}
-			i = 0;
-			len = r;
-		}
-		/*allocate memory for buffer*/
-		if (k >= *line_len)
-		{
-			*line_len += READ_BUF_SIZE;
-			new_p = _realloc(p, k, *line_len + 1);
-			if (!new_p)
+			function_args->line_count_flag = 1;
+			remove_comments(*buf);
+			/* if (_strchr(*buf, ';')) is this a command chain? */
 			{
-				/* failure case*/
-				free(p);
-				*ptr = NULL;
-				return (-1);
+				*len = r;
+				function_args->command_buffer = buf;
 			}
-			p = new_p;
-			*ptr = p;
 		}
-		p[k] = buff[i]; /* copy char from buff to user's*/
-		if (p[k] == '\n')
+	}
+	return (r);
+}
+
+/**
+ * get_input - gets a line minus the newline
+ * @function_args: parameter struct
+ *
+ * Return: bytes read
+ */
+ssize_t get_input(function_args *function_args)
+{
+	static char *buf; /* the ';' command chain buffer */
+	static size_t i, j, len;
+	ssize_t r = 0;
+	char **buf_p = &(function_args->arg_string), *p;
+
+	_putchar(FLUSH);
+	r = input_buf(function_args, &buf, &len);
+	if (r == -1) /* EOF */
+		return (-1);
+	if (len)	/* we have commands left in the chain buffer */
+	{
+		j = i; /* init new iterator to current buf position */
+		p = buf + i; /* get pointer for return */
+
+		chk_chain(function_args, buf, &j, i, len);
+		while (j < len) /* iterate to semicolon or end */
 		{
-			n = 1;
-			p[k + 1] = '\0'; /*null terminator*/
-			i++;
-			break;
+			if (is_chain_del(function_args, buf, &j))
+				break;
+			j++;
 		}
-		k++;
-		i++;
+
+		i = j + 1; /* increment past nulled ';'' */
+		if (i >= len) /* reached end of buffer? */
+		{
+			i = len = 0; /* reset position and length */
+			function_args->command_buffer_type = NORMAL;
+		}
+
+		*buf_p = p; /* pass back pointer to current command position */
+		return (_strlen(p)); /* return length of current command */
 	}
 
-	return (n);
+	*buf_p = buf; /* else not a chain, pass back buffer from _getline() */
+	return (r); /* return length of buffer from _getline() */
+}
+
+/**
+ * read_buf - reads a buffer
+ * @function_args: parameter struct
+ * @buf: buffer
+ * @i: size
+ *
+ * Return: r
+ */
+ssize_t read_buf(function_args *function_args, char *buf, size_t *i)
+{
+	ssize_t r = 0;
+
+	if (*i)
+		return (0);
+	r = read(function_args->read_file_descriptor, buf, READ);
+	if (r >= 0)
+		*i = r;
+	return (r);
+}
+
+/**
+ * _getline - gets the next line of input from STDIN
+ * @function_args: parameter struct
+ * @ptr: address of pointer to buffer, preallocated or NULL
+ * @length: size of preallocated ptr buffer if not NULL
+ *
+ * Return: s
+ */
+int _getline(function_args *function_args, char **ptr, size_t *length)
+{
+	static char buf[READ];
+	static size_t i, len;
+	size_t k;
+	ssize_t r = 0, s = 0;
+	char *p = NULL, *new_p = NULL, *c;
+
+	p = *ptr;
+	if (p && length)
+		s = *length;
+	if (i == len)
+		i = len = 0;
+
+	r = read_buf(function_args, buf, &len);
+	if (r == -1 || (r == 0 && len == 0))
+		return (-1);
+
+	c = _strchr(buf + i, '\n');
+	k = c ? 1 + (unsigned int)(c - buf) : len;
+	new_p = _realloc(p, s, s ? s + k : k + 1);
+	if (!new_p) /* MALLOC FAILURE! */
+		return (p ? free(p), -1 : -1);
+
+	if (s)
+		_strncat(new_p, buf + i, k - i);
+	else
+		_strncpy(new_p, buf + i, k - i + 1);
+
+	s += k - i;
+	i = k;
+	p = new_p;
+
+	if (length)
+		*length = s;
+	*ptr = p;
+	return (s);
+}
+
+/**
+ * sigintHandler - blocks ctrl-C
+ * @sig_num: the signal number
+ *
+ * Return: void
+ */
+void sigintHandler(__attribute__((unused))int sig_num)
+{
+	_puts("\n");
+	_puts("$ ");
+	_putchar(FLUSH);
 }
 

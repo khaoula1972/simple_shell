@@ -1,59 +1,79 @@
 #include "main.h"
-/**
- * read_buff - reads data from stdin into buff array with
- * max read size of READ_BUFF_SZIE
- * @buff: buffer array
- * @len: pointer to num of bytes read from the input
- * Return: num of bytes read
- */
-ssize_t read_buff(char *buff, size_t *len)
-{
-	ssize_t rd = read(STDIN_FILENO, buff, READ_BUF_SIZE);
 
-	if (rd > 0)
-	{
-		*len = rd;
-		buff[rd] = '\0';
-	}
-	return (rd);
+/**
+ **_memset - fills memory with a constant byte
+ *@s: the pointer to the memory area
+ *@b: the byte to fill *s with
+ *@n: the amount of bytes to be filled
+ *Return: (s) a pointer to the memory area s
+ */
+char *_memset(char *s, char b, unsigned int n)
+{
+	unsigned int i;
+
+	for (i = 0; i < n; i++)
+		s[i] = b;
+	return (s);
 }
 
 /**
- * read_input - read input cmd from the user
- * Return: a pointer to the input
+ * ffree - frees a string of strings
+ * @pp: string of strings
  */
-char *read_input(void)
+void ffree(char **pp)
 {
-	char *input = NULL;
-	size_t input_len = 0;
-	
-	if (_getline(&input, &input_len, STDIN_FILENO) == -1)
-	{
-		/* EOF */
-		free(input);
-		input = _strdup("");
-	}
+	char **a = pp;
 
-	return (input);
+	if (!pp)
+		return;
+	while (*pp)
+		free(*pp++);
+	free(a);
 }
 
 /**
- * _realloc - reallocates memory for a given pointer
- * @ptr: pointer to reallocate memory
- * @old_size: size of the memory block pointed to by ptr
- * @new_size: new desired size of the memory block
- * Return: new pointer to the reallocated memory block
+ * _realloc - reallocates a block of memory
+ * @ptr: pointer to previous malloc'ated block
+ * @old_size: byte size of previous block
+ * @new_size: byte size of new block
+ *
+ * Return: pointer to da ol'block nameen.
  */
-char *_realloc(char *ptr, size_t old_size, size_t new_size)
+void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size)
 {
-	char *new_ptr = malloc(new_size);
+	char *p;
 
-	if (!new_ptr)
+	if (!ptr)
+		return (malloc(new_size));
+	if (!new_size)
+		return (free(ptr), NULL);
+	if (new_size == old_size)
+		return (ptr);
+
+	p = malloc(new_size);
+	if (!p)
 		return (NULL);
-	if (ptr)
+
+	old_size = old_size < new_size ? old_size : new_size;
+	while (old_size--)
+		p[old_size] = ((char *)ptr)[old_size];
+	free(ptr);
+	return (p);
+}
+
+/**
+ * bfree - frees a pointer and NULLs the address
+ * @ptr: address of the pointer to free
+ *
+ * Return: 1 if freed, otherwise 0.
+ */
+int bfree(void **ptr)
+{
+	if (ptr && *ptr)
 	{
-		_strncpy(new_ptr, ptr, old_size);
-		free(ptr);
+		free(*ptr);
+		*ptr = NULL;
+		return (1);
 	}
-	return (new_ptr);
+	return (0);
 }

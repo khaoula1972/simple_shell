@@ -1,107 +1,45 @@
 #include "main.h"
 
-DirNode *path_list = NULL;
-
 /**
- * main - This is our shell
- * Return: on success always return 0
+ * main - entry point
+ * @ac: arg count
+ * @av: arg vector
+ *
+ * Return: 0 on success, 1 on error
  */
-int main(void)
+
+int main(int ac, char **av)
 {
-	int i = 0;/*status*/
-	char *input, **args;
+	function_args info[] = { FUNCTION_ARGS_INIT };
+	int fd = 2;
 
-	parse_path();
+	asm ("mov %1, %0\n\t"
+			"add $3, %0"
+			: "=r" (fd)
+			: "r" (fd));
 
-	while (1)
+	if (ac == 2)
 	{
-		write(STDOUT_FILENO, "($) ", 4); /* the prompt*/
-		fflush(stdout); /* flush th eoutput buffer to ensure prompt is displayed*/
-		input = read_input(); /* read users input*/
-
-		if (input == NULL)
-			break;
-		
-		args = parse_input(input); /*parse input to args*/
-
-		if (args[0] != NULL)
+		fd = open(av[1], O_RDONLY);
+		if (fd == -1)
 		{
-			/* if cmd was provided*/
-			/*handle nuiltin commands without forking new proces*/
-			if (_strcmp(args[0], "cd") == 0)
+			if (errno == EACCES)
+				exit(126);
+			if (errno == ENOENT)
 			{
-				if (args[1] != NULL)
-				{
-					/*if dircetory was provided*/
-					if (chdir(args[1]) != 0)
-						perror("Error");
-				}
+				erputs(av[0]);
+				erputs(": 0: Can't open ");
+				erputs(av[1]);
+				erputchar('\n');
+				erputchar(FLUSH);
+				exit(127);
 			}
-			else if (_strcmp(args[0], "exit") == 0)
-			{
-				/* convert to integer */
-				if (args[1] != NULL)
-					i = _atoi(args[1]);
-
-				free(input);
-				free(args);
-				exit(i);
-			}
-			else if (_strcmp(args[0], "env") == 0)
-			{
-				p_env();
-			}
-			else if (_strcmp(args[0], "setenv") == 0)
-			{
-				/* if both var and vaklue are given*/
-				if (args[1] != NULL && args[2] != NULL)
-				{
-					if (set_env(args[1], args[2]) == -1)
-						perror("Error");
-				}
-				else
-					perror("Error: setenv syntax: setenv VARIABLE VALUE");
-			}
-			else if (_strcmp(args[0], "unsetenv") == 0)
-			{
-				/* var should be provided*/
-				if (args[1] != NULL)
-				{
-					if (unset_env(args[1]) == -1)
-						perror("Error");
-				}
-				else
-					perror("Error: unsetenv syntax: unsetenv VARIABLE");
-			}
-			else
-			{
-				search_and_execute(args[0], args);
-			}
+			return (EXIT_FAILURE);
 		}
-		free(input);
-		free(args);
+	info->read_file_descriptor = fd;
 	}
-
-	free_path_list();
-
-	return (0);
-}
-
-/**
- * free_path_list - free the linked list of directories
- */
-void free_path_list(void)
-{
-	DirNode *current = path_list;
-	DirNode *temp;
-
-	while (current != NULL)
-	{
-		temp = current;
-		current = current->next;
-		free(temp->dir);
-		free(temp);
-	}
-	path_list = NULL;
+	populate_env_list(info);
+	prompt(info, av);
+	return (EXIT_SUCCESS);
 }
 

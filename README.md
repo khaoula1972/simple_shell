@@ -28,7 +28,8 @@ With the intention of ensuring our responsibility and active involvement, this g
 
 ## Project description :
 
-When utilizing any major operating system, our interaction with the shell occurs indirectly. For instance, when working with Ubuntu, Linux Mint, or any Linux distribution, we engage with the shell through the terminal. 
+When utilizing any major operating system, our interaction with the shell occurs indirectly. For instance, when working with Ubuntu, Linux Mint, or any Linux
+distribution, we engage with the shell through the terminal.
 
 Shell is a special user program that provides an interface for the user to use operating system services. it accepts human-readable commands from users and converts them into something which the [kernel](https://www.geeksforgeeks.org/kernel-in-operating-system/) can understand.
 
@@ -51,7 +52,7 @@ By building this simple shell, we will gain a deeper understanding of operating 
 
 - [Introduction to Linux Shell and Shell Scripting](https://www.geeksforgeeks.org/introduction-linux-shell-shell-scripting/)
 - [Building a simple shell in C](https://blog.ehoneahobed.com/building-a-simple-shell-in-c-part-1)
-- [Everything you need to know to start coding your own shell](https://intranet.alxswe.com/concepts/64) 
+- [Everything you need to know to start coding your own shell](https://intranet.alxswe.com/concepts/64)
 
 ## Compilation
 

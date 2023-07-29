@@ -1,37 +1,74 @@
 #include "main.h"
 
 /**
- * _atoi - convert string to integer
- * @a: input string
- * Return: converted intger value
+ * is_inter - returns true if shell is in interactive mode
+ * @function_args: struct address
+ *
+ * Return: 1 if in interactive mode, 0 otherwise
  */
-int _atoi(const char *a)
+int is_inter(function_args *function_args)
 {
-	int r = 0; /*result*/
-	bool n = false; /* if it's negtive number or not*/
-
-	while (*a == ' ' || *a == '\t' || *a == '\n' || *a == '\r'
-			|| *a == '\v' || *a == '\f')
-		a++;
-
-	/* checking the sign*/
-	if (*a == '-')
-	{
-		n = true;
-		a++;
-	}
-	else if (*a == '+')
-		a++;
-
-	/*now let's convert*/
-	while (*a >= '0' && *a <= '9')
-	{
-		r = r * 10 + (*a - '0');
-		a++;
-	}
-
-	if (n)
-		r = -r;/*if negtaive*/
-
-	return (r);
+	return (isatty(STDIN_FILENO) &&
+			function_args->read_file_descriptor <= 2);
 }
+
+/**
+ * is_del - checks if character is a delimiter
+ * @c: the char to check
+ * @delim: the delimiter string
+ * Return: 1 if true, 0 if false
+ */
+int is_del(char c, char *delim)
+{
+	while (*delim)
+		if (*delim++ == c)
+			return (1);
+	return (0);
+}
+
+/**
+ *_isalpha - checks for alphabetic character
+ *@c: The character to input
+ *Return: 1 if c is alphabetic, 0 otherwise
+ */
+int _isalpha(int c)
+{
+	if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))
+		return (1);
+	else
+		return (0);
+}
+
+/**
+ *_atoi - converts a string to an integer
+ *@s: the string to be converted
+ *Return: 0 if no numbers in the string, converted number otherwise
+ */
+int _atoi(char *s)
+{
+	int i, sign = 1, flag = 0, output;
+	unsigned int result = 0;
+
+	for (i = 0;  s[i] != '\0' && flag != 2; i++)
+	{
+		if (s[i] == '-')
+			sign *= -1;
+
+		if (s[i] >= '0' && s[i] <= '9')
+		{
+			flag = 1;
+			result *= 10;
+			result += (s[i] - '0');
+		}
+		else if (flag == 1)
+			flag = 2;
+	}
+
+	if (sign == -1)
+		output = -result;
+	else
+		output = result;
+
+	return (output);
+}
+
