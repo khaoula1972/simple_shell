@@ -3,7 +3,6 @@
 /**
  * get_environ - returns the string array copy of our environ
  * @function_args: Structure containing potential arguments. Used to maintain
- *          constant function prototype.
  * Return: Always 0
  */
 char **get_environ(function_args *function_args)
@@ -22,7 +21,6 @@ char **get_environ(function_args *function_args)
 /**
  * _unsetenv - Remove an environment variable
  * @function_args: Structure containing potential arguments. Used to maintain
- *        constant function prototype.
  *  Return: 1 on delete, 0 otherwise
  * @var: the string env var property
  */
@@ -54,9 +52,7 @@ int _unsetenv(function_args *function_args, char *var)
 
 /**
  * _setenv - Initialize a new environment variable,
- *             or modify an existing one
  * @function_args: Structure containing potential arguments. Used to maintain
- *        constant function prototype.
  * @var: the string env var property
  * @value: the string env var value
  *  Return: Always 0
